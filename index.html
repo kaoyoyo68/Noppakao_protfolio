@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio — 3D Artist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg:      #0a0a0f;
+      --bg2:     #111118;
+      --bg3:     #1a1a24;
+      --accent:  #7c3aed;
+      --accent2: #a855f7;
+      --glow:    #c084fc;
+      --cyan:    #22d3ee;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --border:  rgba(124,58,237,0.25);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ── Noise overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem 6%;
+      background: rgba(10,10,15,0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.1rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--accent2), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color 0.3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--glow);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--glow); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 6%; position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 40%, rgba(124,58,237,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 20% 70%, rgba(34,211,238,0.07) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(124,58,237,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,58,237,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.8rem;
+      color: var(--cyan); background: rgba(34,211,238,0.08);
+      border: 1px solid rgba(34,211,238,0.2);
+      padding: 0.4rem 1rem; border-radius: 100px; margin-bottom: 1.5rem;
+    }
+    .hero-tag::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.3 } }
+    h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+    h1 .line2 {
+      display: block;
+      background: linear-gradient(135deg, var(--accent2) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      font-size: 1.15rem; color: var(--muted); max-width: 520px;
+      line-height: 1.7; margin-bottom: 2.5rem;
+    }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 2rem; border-radius: 8px; font-size: 0.95rem;
+      font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: all 0.3s; font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none;
+      box-shadow: 0 0 30px rgba(124,58,237,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 50px rgba(124,58,237,0.6);
+    }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent2); color: var(--accent2);
+      background: rgba(124,58,237,0.08);
+    }
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 6%;
+      display: flex; align-items: center; gap: 0.75rem;
+      font-size: 0.8rem; color: var(--muted); font-family: 'Space Mono', monospace;
+    }
+    .scroll-line {
+      width: 40px; height: 1px; background: var(--muted);
+      animation: scrollAnim 2s ease-in-out infinite;
+    }
+    @keyframes scrollAnim { 0%,100% { width:40px; opacity:1 } 50% { width:70px; opacity:0.4 } }
+
+    /* ── Sections ── */
+    section { padding: 7rem 6%; }
+    .section-label {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      color: var(--accent2); letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem); font-weight: 700;
+      letter-spacing: -0.02em; margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--muted); max-width: 500px; line-height: 1.7; }
+
+    /* ── About ── */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center; margin-top: 4rem;
+    }
+    .about-avatar {
+      aspect-ratio: 1; border-radius: 20px; overflow: hidden;
+      position: relative; max-width: 400px;
+    }
+    .about-avatar-placeholder {
+      width: 100%; height: 100%; min-height: 400px;
+      background: linear-gradient(135deg, var(--bg3) 0%, rgba(124,58,237,0.2) 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 1rem; border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+    .avatar-icon {
+      font-size: 5rem; filter: drop-shadow(0 0 20px rgba(124,58,237,0.5));
+    }
+    .avatar-hint { color: var(--muted); font-size: 0.85rem; }
+    .about-text h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+    .about-text p { color: var(--muted); line-height: 1.8; margin-bottom: 1rem; }
+    .about-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin-top: 2rem;
+    }
+    .stat {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.2rem; text-align: center;
+    }
+    .stat-num {
+      font-family: 'Space Mono', monospace; font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent2), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── Skills ── */
+    #skills { background: var(--bg); }
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 4rem;
+    }
+    .skill-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.8rem;
+      transition: all 0.3s; position: relative; overflow: hidden;
+    }
+    .skill-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(124,58,237,0.05), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .skill-card:hover { border-color: var(--accent2); transform: translateY(-4px); }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-icon { font-size: 2.2rem; margin-bottom: 1rem; }
+    .skill-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .skill-desc { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+    .skill-bar-wrap { margin-top: 1.2rem; }
+    .skill-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem;
+    }
+    .skill-bar {
+      height: 4px; background: var(--bg2); border-radius: 2px; overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%; border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--cyan));
+      transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ── Work / Portfolio ── */
+    #work { background: var(--bg2); }
+    .works-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem; margin-top: 4rem;
+    }
+    .work-card {
+      border-radius: 16px; overflow: hidden;
+      background: var(--bg3); border: 1px solid var(--border);
+      transition: all 0.35s; cursor: pointer;
+    }
+    .work-card:hover { transform: translateY(-6px); border-color: var(--accent2); }
+    .work-thumb {
+      aspect-ratio: 16/10; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .work-thumb-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .work-icon { font-size: 3rem; }
+    .work-hint { font-size: 0.78rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .work-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(10,10,15,0.9), transparent);
+      opacity: 0; transition: opacity 0.3s;
+      display: flex; align-items: flex-end; padding: 1.5rem;
+    }
+    .work-card:hover .work-overlay { opacity: 1; }
+    .work-overlay-text { font-size: 0.85rem; color: var(--text); }
+    .work-info { padding: 1.5rem; }
+    .work-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .tag {
+      font-size: 0.72rem; font-family: 'Space Mono', monospace;
+      padding: 0.25rem 0.65rem; border-radius: 100px;
+      background: rgba(124,58,237,0.15); color: var(--accent2);
+      border: 1px solid rgba(124,58,237,0.2);
+    }
+    .work-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .work-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── Gradient backgrounds per card ── */
+    .grad-1 { background: linear-gradient(135deg, #1a0533, #0a1a2e); }
+    .grad-2 { background: linear-gradient(135deg, #0d1f0d, #1a0e2e); }
+    .grad-3 { background: linear-gradient(135deg, #1f0d0d, #0e101f); }
+    .grad-4 { background: linear-gradient(135deg, #0d1a1f, #1a1a0d); }
+    .grad-5 { background: linear-gradient(135deg, #1a0a1a, #0a1020); }
+    .grad-6 { background: linear-gradient(135deg, #0f0f1f, #1a0f0f); }
+
+    /* ── Contact ── */
+    #contact {
+      background: var(--bg);
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    .contact-wrap { max-width: 680px; width: 100%; }
+    .contact-box {
+      margin-top: 3.5rem;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 24px; padding: 3rem 2.5rem;
+    }
+    .contact-form { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 1.5rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; text-align: left; }
+    label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+    input, textarea {
+      background: var(--bg2); border: 1px solid var(--border);
+      color: var(--text); padding: 0.85rem 1rem; border-radius: 10px;
+      font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem;
+      transition: border-color 0.3s, box-shadow 0.3s; resize: vertical;
+      outline: none;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px rgba(168,85,247,0.1);
+    }
+    textarea { min-height: 140px; }
+    .form-submit { align-self: stretch; }
+    .form-submit .btn { width: 100%; justify-content: center; }
+
+    .social-links { display: flex; gap: 1.5rem; justify-content: center; margin-top: 2.5rem; flex-wrap: wrap; }
+    .social-link {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 1.3rem; border-radius: 8px;
+      border: 1px solid var(--border); color: var(--muted);
+      text-decoration: none; font-size: 0.88rem; font-weight: 500;
+      transition: all 0.3s;
+    }
+    .social-link:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(124,58,237,0.08); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 2rem 6%;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    footer p { font-size: 0.85rem; color: var(--muted); }
+    .footer-brand {
+      font-family: 'Space Mono', monospace; font-size: 0.9rem;
+      background: linear-gradient(135deg, var(--accent2), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Cursor glow ── */
+    .cursor-glow {
+      position: fixed; width: 400px; height: 400px;
+      pointer-events: none; z-index: 0;
+      background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      transition: left 0.15s ease, top 0.15s ease;
+    }
+
+    /* ── Animations ── */
+    .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 4%; }
+      .nav-links { gap: 1.2rem; }
+      #hero, section { padding-left: 4%; padding-right: 4%; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: repeat(3, 1fr); }
+      footer { justify-content: center; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .nav-links { display: none; }
+      .hero-cta { flex-direction: column; }
+      .about-stats { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- Navigation -->
+<nav>
+  <a href="#hero" class="nav-logo">YourName.3D</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Available for freelance work</div>
+    <h1>
+      Creative<br>
+      <span class="line2">3D Artist</span>
+    </h1>
+    <p class="hero-desc">
+      สร้างโลกสามมิติที่น่าทึ่งด้วย Blender, Maya และ Cinema 4D
+      ตั้งแต่ตัวละครสุดเท่ไปจนถึง Environment และ Product Visualization
+    </p>
+    <div class="hero-cta">
+      <a href="#work" class="btn btn-primary">ดูผลงาน ↓</a>
+      <a href="#contact" class="btn btn-outline">ติดต่อฉัน</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <div class="section-label fade-in">// about me</div>
+  <h2 class="section-title fade-in">เกี่ยวกับฉัน</h2>
+  <div class="about-grid">
+    <div class="about-avatar fade-in">
+      <div class="about-avatar-placeholder">
+        <div class="avatar-icon">🧑‍🎨</div>
+        <span class="avatar-hint">วางรูปโปรไฟล์ของคุณที่นี่</span>
+      </div>
+    </div>
+    <div class="about-text fade-in">
+      <h3>สวัสดี ฉันคือ <span style="color:var(--accent2)">Your Name</span></h3>
+      <p>
+        นักออกแบบ 3D ที่หลงใหลในการสร้างสรรค์โลกดิจิทัลมาหลายปี
+        ชื่นชอบการทำ Character Art, Environment Design และ Motion Graphics
+      </p>
+      <p>
+        มีประสบการณ์ทำงานกับ Studio, Freelance และ Game Dev ทั้งในและต่างประเทศ
+        ยินดีรับงาน 3D Visualization, VFX และ Animation
+      </p>
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-num">3+</div>
+          <div class="stat-label">ปีประสบการณ์</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">50+</div>
+          <div class="stat-label">โปรเจกต์</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">20+</div>
+          <div class="stat-label">ลูกค้า</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="section-label fade-in">// skills & tools</div>
+  <h2 class="section-title fade-in">ทักษะและเครื่องมือ</h2>
+  <p class="section-sub fade-in">Software และเทคนิคที่ใช้ในการสร้างงาน 3D</p>
+  <div class="skills-grid">
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🟠</div>
+      <div class="skill-name">Blender</div>
+      <div class="skill-desc">Modeling, Sculpting, Rigging, Animation, Rendering</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>90%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:0%" data-width="90%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🔵</div>
+      <div class="skill-name">Maya</div>
+      <div class="skill-desc">Character Rigging, Animation, VFX Simulation</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>75%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:0%" data-width="75%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🟣</div>
+      <div class="skill-name">ZBrush</div>
+      <div class="skill-desc">High-poly Sculpting, Detailing, Character Design</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>80%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:0%" data-width="80%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🟡</div>
+      <div class="skill-name">Substance Painter</div>
+      <div class="skill-desc">PBR Texturing, Material Creation, Baking</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>85%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:0%" data-width="85%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🔴</div>
+      <div class="skill-name">Unreal Engine</div>
+      <div class="skill-desc">Real-time Rendering, Environment, Lighting</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>70%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:0%" data-width="70%"></div></div>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🟢</div>
+      <div class="skill-name">After Effects</div>
+      <div class="skill-desc">Motion Graphics, Compositing, VFX</div>
+      <div class="skill-bar-wrap">
+        <div class="skill-bar-label"><span>Proficiency</span><span>65%</span></div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:0%" data-width="65%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Work -->
+<section id="work">
+  <div class="section-label fade-in">// portfolio</div>
+  <h2 class="section-title fade-in">ผลงาน</h2>
+  <p class="section-sub fade-in">คอลเลกชั่นผลงาน 3D ที่ผ่านมา</p>
+  <div class="works-grid">
+
+    <div class="work-card fade-in">
+      <div class="work-thumb grad-1">
+        <div class="work-thumb-placeholder">
+          <div class="work-icon">🤖</div>
+          <span class="work-hint">วางภาพงานของคุณที่นี่</span>
+        </div>
+        <div class="work-overlay"><span class="work-overlay-text">ดูผลงาน →</span></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tags">
+          <span class="tag">Character</span>
+          <span class="tag">Blender</span>
+        </div>
+        <div class="work-title">Sci-Fi Robot Character</div>
+        <div class="work-desc">ตัวละครหุ่นยนต์ Sci-Fi แบบ Full Character Design พร้อม Rig</div>
+      </div>
+    </div>
+
+    <div class="work-card fade-in">
+      <div class="work-thumb grad-2">
+        <div class="work-thumb-placeholder">
+          <div class="work-icon">🌿</div>
+          <span class="work-hint">วางภาพงานของคุณที่นี่</span>
+        </div>
+        <div class="work-overlay"><span class="work-overlay-text">ดูผลงาน →</span></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tags">
+          <span class="tag">Environment</span>
+          <span class="tag">Unreal</span>
+        </div>
+        <div class="work-title">Fantasy Forest Scene</div>
+        <div class="work-desc">Environment 3D แบบ Fantasy สำหรับ Game Level Design</div>
+      </div>
+    </div>
+
+    <div class="work-card fade-in">
+      <div class="work-thumb grad-3">
+        <div class="work-thumb-placeholder">
+          <div class="work-icon">💎</div>
+          <span class="work-hint">วางภาพงานของคุณที่นี่</span>
+        </div>
+        <div class="work-overlay"><span class="work-overlay-text">ดูผลงาน →</span></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tags">
+          <span class="tag">Product Viz</span>
+          <span class="tag">Cycles</span>
+        </div>
+        <div class="work-title">Luxury Product Render</div>
+        <div class="work-desc">Product Visualization สินค้าหรูสำหรับ Commercial</div>
+      </div>
+    </div>
+
+    <div class="work-card fade-in">
+      <div class="work-thumb grad-4">
+        <div class="work-thumb-placeholder">
+          <div class="work-icon">🏙️</div>
+          <span class="work-hint">วางภาพงานของคุณที่นี่</span>
+        </div>
+        <div class="work-overlay"><span class="work-overlay-text">ดูผลงาน →</span></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tags">
+          <span class="tag">Arch Viz</span>
+          <span class="tag">Maya</span>
+        </div>
+        <div class="work-title">Cyberpunk City Block</div>
+        <div class="work-desc">Architectural Visualization แบบ Cyberpunk ย่านกลางคืน</div>
+      </div>
+    </div>
+
+    <div class="work-card fade-in">
+      <div class="work-thumb grad-5">
+        <div class="work-thumb-placeholder">
+          <div class="work-icon">🧊</div>
+          <span class="work-hint">วางภาพงานของคุณที่นี่</span>
+        </div>
+        <div class="work-overlay"><span class="work-overlay-text">ดูผลงาน →</span></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tags">
+          <span class="tag">Sculpture</span>
+          <span class="tag">ZBrush</span>
+        </div>
+        <div class="work-title">Abstract Sculpture</div>
+        <div class="work-desc">Organic Sculpture สำหรับ Print และ Digital Art</div>
+      </div>
+    </div>
+
+    <div class="work-card fade-in">
+      <div class="work-thumb grad-6">
+        <div class="work-thumb-placeholder">
+          <div class="work-icon">✨</div>
+          <span class="work-hint">วางภาพงานของคุณที่นี่</span>
+        </div>
+        <div class="work-overlay"><span class="work-overlay-text">ดูผลงาน →</span></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tags">
+          <span class="tag">Motion</span>
+          <span class="tag">After FX</span>
+        </div>
+        <div class="work-title">Motion Graphics Loop</div>
+        <div class="work-desc">Motion Graphics 3D สำหรับ Social Media Content</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="section-label fade-in">// contact</div>
+    <h2 class="section-title fade-in">ติดต่อฉัน</h2>
+    <p class="section-sub fade-in" style="margin: 0 auto;">
+      สนใจร่วมงานหรืออยากคุยเรื่องโปรเจกต์? ส่งข้อความมาได้เลย
+    </p>
+    <div class="contact-box fade-in">
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">ชื่อ</label>
+            <input type="text" id="name" placeholder="ชื่อของคุณ" required />
+          </div>
+          <div class="form-group">
+            <label for="email">อีเมล</label>
+            <input type="email" id="email" placeholder="email@example.com" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="subject">หัวข้อ</label>
+          <input type="text" id="subject" placeholder="เรื่องที่ต้องการติดต่อ" />
+        </div>
+        <div class="form-group">
+          <label for="message">ข้อความ</label>
+          <textarea id="message" placeholder="บอกเล่าโปรเจกต์หรือสิ่งที่ต้องการ..." required></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn btn-primary">ส่งข้อความ →</button>
+        </div>
+      </form>
+    </div>
+    <div class="social-links fade-in">
+      <a href="#" class="social-link">🎨 ArtStation</a>
+      <a href="#" class="social-link">▶ YouTube</a>
+      <a href="#" class="social-link">📸 Instagram</a>
+      <a href="#" class="social-link">in LinkedIn</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <span class="footer-brand">YourName.3D</span>
+  <p>© 2026 — สร้างด้วยความรักในงาน 3D ❤️</p>
+</footer>
+
+<script>
+  // Cursor glow
+  const glow = document.getElementById('cursorGlow');
+  document.addEventListener('mousemove', e => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top  = e.clientY + 'px';
+  });
+
+  // Intersection Observer — fade in + skill bars
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // Animate skill bars inside this element
+        entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width;
+        });
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.textContent = '✓ ส่งแล้ว!';
+    btn.style.background = 'linear-gradient(135deg, #059669, #10b981)';
+    btn.style.boxShadow = '0 0 30px rgba(16,185,129,0.4)';
+    setTimeout(() => {
+      btn.textContent = 'ส่งข้อความ →';
+      btn.style.background = '';
+      btn.style.boxShadow = '';
+      e.target.reset();
+    }, 3000);
+  }
+
+  // Nav scroll effect
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.padding = window.scrollY > 50 ? '0.8rem 6%' : '1.2rem 6%';
+  });
+</script>
+</body>
+</html>
