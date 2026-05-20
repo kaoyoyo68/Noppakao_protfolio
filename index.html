@@ -273,7 +273,8 @@
     #skills { background: var(--bg); }
     .skills-orb { width: 500px; height: 500px; bottom: -150px; right: -150px; opacity: 0.2; }
     .skills-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr);
+      display: flex; flex-wrap: wrap;
+      justify-content: center;
       gap: 1px; margin-top: 4rem;
       background: rgba(155,48,255,0.15);
       border: 1px solid rgba(155,48,255,0.2);
@@ -284,6 +285,7 @@
       display: flex; flex-direction: column; gap: 0.9rem;
       transition: background 0.3s;
       position: relative; overflow: hidden;
+      flex: 0 0 calc(25% - 1px);
     }
     .skill-card::after {
       content: ''; position: absolute; bottom: 0; left: 0; right: 0;
@@ -307,8 +309,8 @@
       content: ''; flex: 1; height: 1px;
       background: rgba(155,48,255,0.2);
     }
-    .skills-grid-3 {
-      grid-template-columns: repeat(3, 1fr) !important;
+    .skills-grid-3 .skill-card {
+      flex: 1 1 calc(33.33% - 1px);
     }
     .skill-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
     .skill-icon img { width: 36px; height: 36px; object-fit: contain; }
