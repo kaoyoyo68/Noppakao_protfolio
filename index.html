@@ -293,6 +293,23 @@
     }
     .skill-card:hover { background: rgba(155,48,255,0.08); }
     .skill-card:hover::after { transform: scaleX(1); }
+    .skills-group-label {
+      font-family: 'Orbitron', monospace; font-size: 0.72rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .skills-group-label::before {
+      content: ''; width: 24px; height: 1px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+    }
+    .skills-group-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(155,48,255,0.2);
+    }
+    .skills-grid-3 {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
     .skill-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
     .skill-icon img { width: 36px; height: 36px; object-fit: contain; }
     .skill-name { font-family: 'Orbitron', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text); }
@@ -537,6 +554,8 @@
   <div class="section-label fade-in">Skills & Tools</div>
   <h2 class="fade-in">SKILLS & <span class="accent">TOOLS</span></h2>
   <p class="section-sub fade-in">Software and techniques used in 3D creation</p>
+  <!-- 3D Software -->
+  <div class="skills-group-label fade-in">3D Software</div>
   <div class="skills-grid">
     <div class="skill-card fade-in">
       <div class="skill-icon"><img src="https://cdn.simpleicons.org/blender/9b30ff" alt="Blender" /></div>
@@ -569,21 +588,26 @@
       <div class="skill-desc">PBR Texturing, Material Creation, Baking</div>
     </div>
     <div class="skill-card fade-in">
-      <div class="skill-icon"><img src="https://cdn.simpleicons.org/unrealengine/ffffff" alt="Unreal Engine" /></div>
-      <div class="skill-name">Unreal Engine</div>
-      <div class="skill-desc">Real-time Rendering, Environment, Lighting</div>
-    </div>
-    <div class="skill-card fade-in">
-      <div class="skill-icon"><img src="https://cdn.simpleicons.org/unity/ffffff" alt="Unity" /></div>
-      <div class="skill-name">Unity</div>
-      <div class="skill-desc">Game Development, Asset Integration, Scene Setup</div>
-    </div>
-    <div class="skill-card fade-in">
       <div class="skill-icon"><img src="logos/3dcoat.png" alt="3D Coat" /></div>
       <div class="skill-name">3D Coat</div>
       <div class="skill-desc">Retopology, UV Mapping, Voxel Sculpting</div>
     </div>
-    <div class="skill-card fade-in">
+  </div>
+
+  <!-- Game Engines -->
+  <div class="skills-group-label fade-in" style="margin-top:3rem">Game Engines</div>
+  <div class="skills-grid skills-grid-3 fade-in">
+    <div class="skill-card">
+      <div class="skill-icon"><img src="https://cdn.simpleicons.org/unrealengine/ffffff" alt="Unreal Engine" /></div>
+      <div class="skill-name">Unreal Engine</div>
+      <div class="skill-desc">Real-time Rendering, Environment, Lighting</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon"><img src="https://cdn.simpleicons.org/unity/ffffff" alt="Unity" /></div>
+      <div class="skill-name">Unity</div>
+      <div class="skill-desc">Game Development, Asset Integration, Scene Setup</div>
+    </div>
+    <div class="skill-card">
       <div class="skill-icon"><img src="https://cdn.simpleicons.org/roblox/ff4444" alt="Roblox" /></div>
       <div class="skill-name">Roblox Studio</div>
       <div class="skill-desc">Game Asset Creation, 3D Design for Roblox Platform</div>
