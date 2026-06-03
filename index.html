@@ -622,13 +622,33 @@
   </div>
 </section>
 
+<!-- Lightbox Modal -->
+<div id="lightbox" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.95);align-items:center;justify-content:center;flex-direction:column">
+  <div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 2rem;background:rgba(7,7,26,0.8);border-bottom:1px solid rgba(155,48,255,0.2)">
+    <div>
+      <div id="lb-title" style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:#fff;letter-spacing:0.06em;text-transform:uppercase"></div>
+      <div id="lb-counter" style="font-family:'Orbitron',monospace;font-size:0.65rem;color:rgba(255,255,255,0.4);letter-spacing:0.15em;margin-top:0.2rem"></div>
+    </div>
+    <button onclick="closeLightbox()" style="background:rgba(155,48,255,0.15);border:1px solid rgba(155,48,255,0.3);color:#fff;width:40px;height:40px;border-radius:4px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+  <div style="display:flex;align-items:center;width:100%;height:100%;padding:80px 20px 20px;gap:1rem;justify-content:center">
+    <button id="lb-prev" onclick="lbNav(-1)" style="background:rgba(155,48,255,0.15);border:1px solid rgba(155,48,255,0.3);color:#fff;width:48px;height:48px;border-radius:4px;cursor:pointer;font-size:1.4rem;flex-shrink:0;transition:all 0.2s">‹</button>
+    <div style="flex:1;max-width:900px;max-height:calc(100vh - 120px);display:flex;align-items:center;justify-content:center">
+      <img id="lb-img" src="" alt="" style="max-width:100%;max-height:calc(100vh - 120px);object-fit:contain;border:1px solid rgba(155,48,255,0.2);border-radius:4px" />
+    </div>
+    <button id="lb-next" onclick="lbNav(1)" style="background:rgba(155,48,255,0.15);border:1px solid rgba(155,48,255,0.3);color:#fff;width:48px;height:48px;border-radius:4px;cursor:pointer;font-size:1.4rem;flex-shrink:0;transition:all 0.2s">›</button>
+  </div>
+  <!-- Thumbnails strip -->
+  <div id="lb-thumbs" style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:6px;padding:0.8rem 1.5rem;background:rgba(7,7,26,0.9);border-top:1px solid rgba(155,48,255,0.15);overflow-x:auto;justify-content:center"></div>
+</div>
+
 <!-- Work -->
 <section id="work">
   <div class="section-label fade-in">Portfolio</div>
   <h2 class="fade-in">SELECTED <span class="accent">WORKS</span></h2>
   <p class="section-sub fade-in">A collection of selected 3D artwork</p>
   <div class="works-grid">
-    <div class="work-card fade-in">
+    <div class="work-card fade-in" onclick="openLightbox('Invictus')">
       <div class="work-thumb wbg1">
         <div class="work-thumb-bg"><div class="work-icon">🤖</div><span class="work-hint">Place image here</span></div>
         <div class="work-overlay"><span class="work-overlay-text">View Project ↗</span></div>
@@ -638,7 +658,7 @@
         <div class="work-title">Invictus</div>
       </div>
     </div>
-    <div class="work-card fade-in">
+    <div class="work-card fade-in" onclick="openLightbox('EverGreen')">
       <div class="work-thumb">
         <img src="images/EverGreen/town_hall_interior02.jpg" alt="EverGreen" style="width:100%;height:100%;object-fit:cover;transition:transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)" />
         <div class="work-overlay"><span class="work-overlay-text">View Project ↗</span></div>
@@ -648,7 +668,7 @@
         <div class="work-title">EverGreen</div>
       </div>
     </div>
-    <div class="work-card fade-in">
+    <div class="work-card fade-in" onclick="openLightbox('TheCollectors')">
       <div class="work-thumb wbg3">
         <div class="work-thumb-bg"><div class="work-icon">💎</div><span class="work-hint">Place image here</span></div>
         <div class="work-overlay"><span class="work-overlay-text">View Project ↗</span></div>
@@ -658,7 +678,7 @@
         <div class="work-title">The Collectors</div>
       </div>
     </div>
-    <div class="work-card fade-in">
+    <div class="work-card fade-in" onclick="openLightbox('NiceToZYou')">
       <div class="work-thumb wbg4">
         <div class="work-thumb-bg"><div class="work-icon">🏙️</div><span class="work-hint">Place image here</span></div>
         <div class="work-overlay"><span class="work-overlay-text">View Project ↗</span></div>
@@ -668,7 +688,7 @@
         <div class="work-title">Nice To Z You</div>
       </div>
     </div>
-    <div class="work-card fade-in">
+    <div class="work-card fade-in" onclick="openLightbox('FatherSon')">
       <div class="work-thumb wbg5">
         <div class="work-thumb-bg"><div class="work-icon">🧊</div><span class="work-hint">Place image here</span></div>
         <div class="work-overlay"><span class="work-overlay-text">View Project ↗</span></div>
@@ -678,7 +698,7 @@
         <div class="work-title">Father, Son & Holy Guns</div>
       </div>
     </div>
-    <div class="work-card fade-in">
+    <div class="work-card fade-in" onclick="openLightbox('MotionGraphics')">
       <div class="work-thumb wbg6">
         <div class="work-thumb-bg"><div class="work-icon">✨</div><span class="work-hint">Place image here</span></div>
         <div class="work-overlay"><span class="work-overlay-text">View Project ↗</span></div>
@@ -723,6 +743,90 @@
 </footer>
 
 <script>
+  // ── Lightbox ──
+  const projects = {
+    Invictus:       { title: 'Invictus',               images: [] },
+    EverGreen:      { title: 'EverGreen',              images: [
+      'images/EverGreen/town_hall_interior02.jpg',
+      'images/EverGreen/test_texture_unity.jpg',
+      'images/EverGreen/test_texture_unity_forg.jpg',
+      'images/EverGreen/town hall.jpg'
+    ]},
+    TheCollectors:  { title: 'The Collectors',         images: [] },
+    NiceToZYou:     { title: 'Nice To Z You',          images: [] },
+    FatherSon:      { title: 'Father, Son & Holy Guns',images: [] },
+    MotionGraphics: { title: 'Motion Graphics Loop',   images: [] },
+  };
+
+  let lbIndex = 0;
+  let lbImages = [];
+
+  function openLightbox(key) {
+    const p = projects[key];
+    if (!p) return;
+    lbImages = p.images;
+    lbIndex = 0;
+
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lb-title').textContent = p.title;
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    if (lbImages.length === 0) {
+      document.getElementById('lb-img').src = '';
+      document.getElementById('lb-img').style.display = 'none';
+      document.getElementById('lb-counter').textContent = 'Coming soon';
+      document.getElementById('lb-prev').style.display = 'none';
+      document.getElementById('lb-next').style.display = 'none';
+      document.getElementById('lb-thumbs').innerHTML = '<span style="color:rgba(255,255,255,0.3);font-family:Orbitron,monospace;font-size:0.65rem;letter-spacing:0.15em">NO IMAGES YET</span>';
+      return;
+    }
+
+    document.getElementById('lb-img').style.display = 'block';
+    document.getElementById('lb-prev').style.display = 'flex';
+    document.getElementById('lb-next').style.display = 'flex';
+    lbRender();
+  }
+
+  function lbRender() {
+    document.getElementById('lb-img').src = lbImages[lbIndex];
+    document.getElementById('lb-counter').textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+    // Thumbnails
+    const thumbs = document.getElementById('lb-thumbs');
+    thumbs.innerHTML = lbImages.map((src, i) =>
+      `<img src="${src}" onclick="lbGoto(${i})" style="height:56px;width:80px;object-fit:cover;border-radius:3px;cursor:pointer;opacity:${i===lbIndex?1:0.4};border:${i===lbIndex?'2px solid #9b30ff':'2px solid transparent'};transition:all 0.2s" />`
+    ).join('');
+    // Prev/Next visibility
+    document.getElementById('lb-prev').style.opacity = lbIndex === 0 ? '0.3' : '1';
+    document.getElementById('lb-next').style.opacity = lbIndex === lbImages.length - 1 ? '0.3' : '1';
+  }
+
+  function lbNav(dir) {
+    lbIndex = Math.max(0, Math.min(lbImages.length - 1, lbIndex + dir));
+    lbRender();
+  }
+
+  function lbGoto(i) { lbIndex = i; lbRender(); }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Close on backdrop click
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+
+  // Keyboard nav
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('lightbox').style.display === 'none') return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lbNav(-1);
+    if (e.key === 'ArrowRight') lbNav(1);
+  });
+
+  // ── Intersection Observer ──
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
