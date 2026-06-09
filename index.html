@@ -519,21 +519,21 @@
       0%   { transform: scale(1.08) translate(0.5%, 0.3%); }
       100% { transform: scale(1.0)  translate(-0.5%, -0.3%); }
     }
-    /* clip-path wipe in */
+    /* fade in */
     .showcase-slide.wipe-in {
-      animation: wipeIn 1.5s cubic-bezier(0.77,0,0.175,1) forwards;
+      animation: showcaseFadeIn 2s ease forwards;
     }
-    @keyframes wipeIn {
-      from { clip-path: inset(0 100% 0 0); opacity: 1; }
-      to   { clip-path: inset(0 0%   0 0); opacity: 1; }
+    @keyframes showcaseFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
     /* outgoing fade */
     .showcase-slide.fade-out {
-      animation: showcaseFadeOut 1.5s ease forwards;
+      animation: showcaseFadeOut 2s ease forwards;
     }
     @keyframes showcaseFadeOut {
-      0%   { opacity: 1; transform: scale(1.0); }
-      100% { opacity: 0; transform: scale(1.04); }
+      0%   { opacity: 1; }
+      100% { opacity: 0; }
     }
     /* RGB glitch flash */
     .showcase-glitch {
@@ -994,7 +994,7 @@
       'images/EverGreen/town hall.jpg',
       'images/EverGreen/test_texture_unity_forg.jpg',
     ];
-    const SLIDE_DURATION = 5000;
+    const SLIDE_DURATION = 8000;
     const showcase = document.getElementById('heroShowcase');
     const glitchEl = document.getElementById('showcaseGlitch');
     const progBar  = document.getElementById('sProg');
@@ -1034,11 +1034,6 @@
       const slides = sGetSlides();
       const prev = slides[sIdx];
       const nextSlide = slides[next];
-
-      // Glitch flash
-      glitchEl.classList.remove('flash');
-      void glitchEl.offsetWidth;
-      glitchEl.classList.add('flash');
 
       // Outgoing
       prev.classList.remove('zoom');
