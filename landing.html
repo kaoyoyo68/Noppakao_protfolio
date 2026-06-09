@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOPPAKAO.3D — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --purple: #9b30ff;
+      --cyan:   #00e5ff;
+      --magenta:#cc00ff;
+    }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+
+    /* ── Slideshow ── */
+    .slides { position: fixed; inset: 0; z-index: 0; }
+    .slide {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: none;
+      animation: kenBurns 8s ease-in-out forwards;
+    }
+    .slide.active { opacity: 1; }
+    .slide.leaving { opacity: 0; }
+    @keyframes kenBurns {
+      0%   { transform: scale(1.08) translate(1%, 0.5%); }
+      100% { transform: scale(1.0)  translate(-1%, -0.5%); }
+    }
+
+    /* ── Dark overlay ── */
+    .overlay {
+      position: fixed; inset: 0; z-index: 1;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.3) 0%,
+        rgba(7,7,26,0.55) 50%,
+        rgba(7,7,26,0.85) 100%
+      );
+    }
+
+    /* ── Scanlines ── */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.08) 0px,
+        rgba(0,0,0,0.08) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+    }
+
+    /* ── Noise overlay ── */
+    .noise {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
+      opacity: 0; transition: opacity 0.05s;
+    }
+    .noise.active { opacity: 1; }
+    .noise canvas { width: 100%; height: 100%; }
+
+    /* ── Glitch slices ── */
+    .glitch-container {
+      position: fixed; inset: 0; z-index: 4;
+      pointer-events: none; overflow: hidden;
+    }
+    .glitch-slice {
+      position: absolute; left: 0; right: 0;
+      background-size: cover; background-position: center;
+      opacity: 0;
+    }
+
+    /* ── RGB Split overlay ── */
+    .rgb-split {
+      position: fixed; inset: 0; z-index: 4; pointer-events: none;
+      mix-blend-mode: screen; opacity: 0;
+    }
+    .rgb-r { background: rgba(255,0,60,0.25); }
+    .rgb-b { background: rgba(0,60,255,0.25); }
+
+    /* ── Glitch lines ── */
+    .glitch-lines {
+      position: fixed; inset: 0; z-index: 5; pointer-events: none;
+    }
+    .glitch-line {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+      opacity: 0; transform: scaleX(0);
+    }
+
+    /* ── UI Layer ── */
+    .ui { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; }
+
+    /* Nav */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.8rem 5%;
+    }
+    .nav-logo {
+      font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700;
+      color: #fff; text-decoration: none; letter-spacing: 0.08em;
+      text-shadow: 0 0 20px var(--purple);
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Orbitron', monospace; font-size: 0.72rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--cyan); text-shadow: 0 0 10px var(--cyan); }
+
+    /* Hero */
+    .hero {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 0 5% 5rem;
+    }
+    .hero-eyebrow {
+      font-family: 'Orbitron', monospace; font-size: 0.65rem;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 30px; height: 1px;
+      background: var(--cyan); box-shadow: 0 0 8px var(--cyan);
+    }
+
+    /* Glitch text */
+    .glitch-text {
+      font-family: 'Orbitron', monospace; font-weight: 900;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 1.0; letter-spacing: -0.02em;
+      text-transform: uppercase; color: #fff;
+      position: relative; margin-bottom: 1.5rem;
+      text-shadow: 0 0 40px rgba(155,48,255,0.4);
+    }
+    .glitch-text .accent {
+      background: linear-gradient(90deg, var(--purple), var(--magenta), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, var(--purple), var(--magenta), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .glitch-text::before {
+      animation: glitchTop 4s infinite linear;
+      clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+    }
+    .glitch-text::after {
+      animation: glitchBottom 4s infinite linear;
+      clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+    }
+    @keyframes glitchTop {
+      0%,90%,100% { transform: translate(0); opacity: 0; }
+      91% { transform: translate(-4px, -2px); opacity: 0.8; }
+      93% { transform: translate(4px, 0);    opacity: 0.6; }
+      95% { transform: translate(-2px, 1px); opacity: 0.9; }
+      97% { transform: translate(0);         opacity: 0; }
+    }
+    @keyframes glitchBottom {
+      0%,88%,100% { transform: translate(0); opacity: 0; }
+      89% { transform: translate(4px, 2px);  opacity: 0.7; }
+      91% { transform: translate(-4px, -1px);opacity: 0.5; }
+      93% { transform: translate(2px, 0);    opacity: 0.8; }
+      95% { transform: translate(0);         opacity: 0; }
+    }
+
+    .hero-sub {
+      font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;
+      color: rgba(255,255,255,0.55); max-width: 480px;
+      line-height: 1.7; margin-bottom: 2.5rem; font-weight: 400;
+    }
+    .hero-sub strong { color: var(--cyan); font-weight: 600; }
+
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      font-family: 'Orbitron', monospace; font-size: 0.7rem;
+      font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.9rem 2rem; text-decoration: none; cursor: pointer;
+      border: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple), var(--magenta));
+      color: #fff; border-radius: 3px;
+      box-shadow: 0 0 30px rgba(204,0,255,0.4);
+    }
+    .btn-primary:hover { box-shadow: 0 0 50px rgba(204,0,255,0.7); transform: translateY(-2px); }
+    .btn-ghost {
+      background: transparent; color: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.2); border-radius: 3px;
+    }
+    .btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,0.06); }
+
+    /* Slide counter */
+    .slide-counter {
+      position: fixed; bottom: 2.5rem; right: 5%; z-index: 10;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 0.8rem;
+    }
+    .counter-num {
+      font-family: 'Orbitron', monospace; font-size: 0.65rem;
+      letter-spacing: 0.15em; color: rgba(255,255,255,0.4);
+    }
+    .counter-num span { color: var(--cyan); font-size: 1rem; font-weight: 700; }
+    .counter-dots { display: flex; gap: 0.5rem; }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); cursor: pointer;
+      transition: all 0.3s; border: 1px solid transparent;
+    }
+    .dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); transform: scale(1.3); }
+
+    /* Progress bar */
+    .progress-bar {
+      position: fixed; bottom: 0; left: 0; z-index: 10;
+      height: 2px; background: linear-gradient(90deg, var(--purple), var(--cyan));
+      box-shadow: 0 0 8px var(--cyan);
+      transition: none;
+    }
+
+    /* Slide title badge */
+    .slide-badge {
+      position: fixed; top: 50%; right: 5%; z-index: 10;
+      transform: translateY(-50%);
+      writing-mode: vertical-rl; text-orientation: mixed;
+      font-family: 'Orbitron', monospace; font-size: 0.62rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.25); transition: color 0.5s;
+    }
+
+    /* Scroll hint */
+    .scroll-hint {
+      position: fixed; bottom: 2.5rem; left: 5%; z-index: 10;
+      display: flex; align-items: center; gap: 0.75rem;
+      font-family: 'Orbitron', monospace; font-size: 0.58rem;
+      letter-spacing: 0.2em; color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      animation: fadeInUp 1s 2s both;
+    }
+    .scroll-hint::before {
+      content: ''; width: 30px; height: 1px;
+      background: rgba(255,255,255,0.2);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine { 0%,100%{width:30px;opacity:0.3} 50%{width:55px;opacity:0.7} }
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:none} }
+
+    /* Corner deco */
+    .corner { position: fixed; z-index: 10; width: 20px; height: 20px; }
+    .corner.tl { top: 1.5rem; left: 1.5rem; border-top: 1px solid var(--cyan); border-left: 1px solid var(--cyan); }
+    .corner.tr { top: 1.5rem; right: 1.5rem; border-top: 1px solid var(--cyan); border-right: 1px solid var(--cyan); }
+    .corner.bl { bottom: 1.5rem; left: 1.5rem; border-bottom: 1px solid var(--cyan); border-left: 1px solid var(--cyan); }
+    .corner.br { bottom: 1.5rem; right: 1.5rem; border-bottom: 1px solid var(--cyan); border-right: 1px solid var(--cyan); }
+
+    /* Intro animation */
+    .hero-eyebrow { animation: fadeInUp 0.8s 0.3s both; }
+    .glitch-text   { animation: fadeInUp 0.8s 0.6s both; }
+    .hero-sub      { animation: fadeInUp 0.8s 0.9s both; }
+    .hero-btns     { animation: fadeInUp 0.8s 1.2s both; }
+  </style>
+</head>
+<body>
+
+<!-- Slides -->
+<div class="slides" id="slides"></div>
+
+<!-- Overlays -->
+<div class="overlay"></div>
+<div class="scanlines"></div>
+<div class="noise" id="noise"><canvas id="noiseCanvas"></canvas></div>
+
+<!-- Glitch -->
+<div class="glitch-container" id="glitchContainer"></div>
+<div class="rgb-split rgb-r" id="rgbR"></div>
+<div class="rgb-split rgb-b" id="rgbB"></div>
+<div class="glitch-lines" id="glitchLines"></div>
+
+<!-- Corners -->
+<div class="corner tl"></div>
+<div class="corner tr"></div>
+<div class="corner bl"></div>
+<div class="corner br"></div>
+
+<!-- UI -->
+<div class="ui">
+  <nav>
+    <a href="index.html" class="nav-logo">NOPPAKAO<span>.3D</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">About</a></li>
+      <li><a href="index.html#skills">Skills</a></li>
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="hero">
+    <div class="hero-eyebrow">3D Artist — Available for Freelance</div>
+    <h1 class="glitch-text" data-text="3D ARTIST">
+      CREATIVE<br><span class="accent">3D ARTIST</span>
+    </h1>
+    <p class="hero-sub">
+      Crafting stunning 3D worlds with <strong>Blender</strong>, <strong>Maya</strong> & more.
+      Environment · Character · Visualization
+    </p>
+    <div class="hero-btns">
+      <a href="index.html#work" class="btn btn-primary">View Portfolio ↗</a>
+      <a href="index.html#contact" class="btn btn-ghost">Get In Touch</a>
+    </div>
+  </div>
+</div>
+
+<!-- Counter & Progress -->
+<div class="slide-counter">
+  <div class="counter-num"><span id="curNum">01</span> / <span id="totalNum">04</span></div>
+  <div class="counter-dots" id="dots"></div>
+</div>
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-badge" id="slideBadge"></div>
+<div class="scroll-hint">Scroll to explore</div>
+
+<script>
+  const images = [
+    { src: 'images/EverGreen/town_hall_interior02.jpg', title: 'EverGreen' },
+    { src: 'images/EverGreen/test_texture_unity.jpg',   title: 'EverGreen' },
+    { src: 'images/EverGreen/test_texture_unity_forg.jpg', title: 'EverGreen' },
+    { src: 'images/EverGreen/town hall.jpg',            title: 'EverGreen' },
+  ];
+
+  const DURATION = 5000;  // ms per slide
+  const GLITCH_DURATION = 700; // ms glitch transition
+
+  let current = 0;
+  let timer = null;
+  let progressTimer = null;
+  let progressStart = null;
+
+  // Build slides
+  const slidesEl = document.getElementById('slides');
+  images.forEach((img, i) => {
+    const s = document.createElement('div');
+    s.className = 'slide' + (i === 0 ? ' active' : '');
+    s.style.backgroundImage = `url('${img.src}')`;
+    slidesEl.appendChild(s);
+  });
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  images.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  document.getElementById('totalNum').textContent = String(images.length).padStart(2,'0');
+
+  // ── Noise canvas ──
+  const noiseCanvas = document.getElementById('noiseCanvas');
+  const noiseCtx = noiseCanvas.getContext('2d');
+  noiseCanvas.width = 300; noiseCanvas.height = 300;
+
+  function renderNoise() {
+    const d = noiseCtx.createImageData(300, 300);
+    for (let i = 0; i < d.data.length; i += 4) {
+      const v = Math.random() * 255;
+      d.data[i] = d.data[i+1] = d.data[i+2] = v;
+      d.data[i+3] = Math.random() * 80;
+    }
+    noiseCtx.putImageData(d, 0, 0);
+  }
+  let noiseInt = null;
+
+  // ── Glitch transition ──
+  function glitchTransition(nextIndex) {
+    const slides = slidesEl.querySelectorAll('.slide');
+    const nextSlide = slides[nextIndex];
+    const prevSlide = slides[current];
+    const container = document.getElementById('glitchContainer');
+    const rgbR = document.getElementById('rgbR');
+    const rgbB = document.getElementById('rgbB');
+    const linesEl = document.getElementById('glitchLines');
+    const noiseEl = document.getElementById('noise');
+
+    // Start noise
+    noiseEl.classList.add('active');
+    noiseInt = setInterval(renderNoise, 50);
+
+    // RGB split
+    rgbR.style.transform = 'translateX(-8px)'; rgbR.style.opacity = '1';
+    rgbB.style.transform = 'translateX(8px)';  rgbB.style.opacity = '1';
+    rgbR.style.transition = rgbB.style.transition = 'none';
+
+    // Glitch slices
+    const numSlices = 12;
+    const sliceHeight = window.innerHeight / numSlices;
+    container.innerHTML = '';
+    for (let i = 0; i < numSlices; i++) {
+      const slice = document.createElement('div');
+      slice.className = 'glitch-slice';
+      slice.style.cssText = `
+        top:${i * sliceHeight}px; height:${sliceHeight + 1}px;
+        background-image:url('${images[nextIndex].src}');
+        background-size:cover;
+        background-position:center ${-(i * sliceHeight)}px;
+        opacity:1;
+        transform:translateX(${(Math.random()-0.5)*40}px);
+        transition:transform 0.1s, opacity 0.2s;
+      `;
+      container.appendChild(slice);
+    }
+
+    // Glitch lines
+    linesEl.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+      const line = document.createElement('div');
+      line.className = 'glitch-line';
+      line.style.cssText = `top:${Math.random()*100}%;opacity:1;transform:scaleX(${Math.random()*0.7+0.3});transition:none;`;
+      linesEl.appendChild(line);
+    }
+
+    // Animate slices
+    let t1 = setTimeout(() => {
+      container.querySelectorAll('.glitch-slice').forEach(s => {
+        s.style.transform = `translateX(${(Math.random()-0.5)*20}px)`;
+      });
+    }, 100);
+
+    let t2 = setTimeout(() => {
+      container.querySelectorAll('.glitch-slice').forEach(s => {
+        s.style.transform = 'translateX(0)';
+        s.style.opacity = '0';
+      });
+      rgbR.style.transition = rgbB.style.transition = 'all 0.3s';
+      rgbR.style.transform = rgbB.style.transform = 'translateX(0)';
+      rgbR.style.opacity = rgbB.style.opacity = '0';
+      linesEl.innerHTML = '';
+
+      // Swap slides
+      prevSlide.style.opacity = '0';
+      nextSlide.classList.add('active');
+      nextSlide.style.opacity = '1';
+      nextSlide.style.animation = 'none';
+      void nextSlide.offsetWidth;
+      nextSlide.style.animation = 'kenBurns 8s ease-in-out forwards';
+
+      setTimeout(() => {
+        prevSlide.classList.remove('active');
+        container.innerHTML = '';
+        noiseEl.classList.remove('active');
+        clearInterval(noiseInt);
+      }, 300);
+
+      current = nextIndex;
+      updateUI();
+    }, GLITCH_DURATION);
+  }
+
+  function goTo(index) {
+    if (index === current) return;
+    clearTimeout(timer);
+    cancelAnimationFrame(progressTimer);
+    glitchTransition(index);
+    startTimer();
+  }
+
+  function next() {
+    const nextIndex = (current + 1) % images.length;
+    glitchTransition(nextIndex);
+    startTimer();
+  }
+
+  function updateUI() {
+    document.getElementById('curNum').textContent = String(current + 1).padStart(2,'0');
+    document.getElementById('slideBadge').textContent = images[current].title;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  // Progress bar
+  function startTimer() {
+    progressStart = performance.now();
+    const bar = document.getElementById('progressBar');
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+
+    function tick(now) {
+      const elapsed = now - progressStart;
+      const pct = Math.min((elapsed / DURATION) * 100, 100);
+      bar.style.width = pct + '%';
+      if (elapsed < DURATION) {
+        progressTimer = requestAnimationFrame(tick);
+      } else {
+        next();
+      }
+    }
+    progressTimer = requestAnimationFrame(tick);
+  }
+
+  // Init
+  updateUI();
+  startTimer();
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight') goTo((current+1) % images.length);
+    if (e.key === 'ArrowLeft')  goTo((current-1+images.length) % images.length);
+  });
+
+  // Touch swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) goTo(diff > 0 ? (current+1)%images.length : (current-1+images.length)%images.length);
+  });
+</script>
+</body>
+</html>
